@@ -1,10 +1,14 @@
-import { Link } from "react-router-dom"
-import { useState } from "react"
+import { Link, Navigate } from "react-router-dom"
+import { useContext, useState } from "react"
 import axios from "axios";
+import { UserContext } from "../store/UserContext";
 export default function RegisterPage(){
+    const {setUser} = useContext(UserContext);
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [registered, setIsRegistered] = useState(false);
     // This function will send data to backend /register
     async function registerUser(ev){
         ev.preventDefault();
@@ -14,10 +18,23 @@ export default function RegisterPage(){
             email,
             password
         });
+        const response = await axios.post('http://localhost:4000/login', {
+                email,
+                password
+            }, { withCredentials: true });
+
+            const userInfo = response.data;
+            setUser(userInfo);
+            
+        setIsRegistered(true);
+        
         alert('Registration Successful. You can now login')
         }catch (err){
             alert('Registration Failed! Please try again later')
         }
+    }
+    if (registered) {
+        return <Navigate to={'/'} />;
     }
     return (
         <div className="mt-4 grow flex items-center justify-around">

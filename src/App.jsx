@@ -4,12 +4,16 @@ import IndexPage from './pages/IndexPage'
 import LoginPage from './pages/LoginPage'
 import Layout from './Layout'
 import RegisterPage from './pages/RegisterPage'
+import axios from 'axios'
+import UserContextProvider from './store/UserContext'
 
+// axios.defaults.withCredentials = true;
 function App() {
   
 
   return (
-    <Routes>
+    <UserContextProvider>
+      <Routes>
       <Route path="/" element={<Layout />}>
        <Route index element={<IndexPage />}/> 
        <Route path="/login" element={<LoginPage />}/>
@@ -17,6 +21,8 @@ function App() {
       </Route>
       
     </Routes>
+    </UserContextProvider>
+    
   )
 }
 
