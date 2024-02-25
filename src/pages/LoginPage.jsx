@@ -13,14 +13,28 @@ export default function LoginPage() {
     async function handleLoginUser(evt) {
         evt.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/login', {
-                email,
-                password
-            }, {withCredentials : true});
+            // const response = await axios.post('http://localhost:4000/login', {
+            //     email,
+            //     password
+            // }, {withCredentials : true});
+            const response = await fetch('http://localhost:4000/login', {
+                method: 'POST',
+                body: JSON.stringify({email, password}),
+                headers: {'Content-Type':'application/json'},
+                credentials: 'include', 
+            })
 
-            const userInfo = response.data; // Assuming user information is in response.data
-            setUser(userInfo);
-            setLoggedIn(true);
+            if (response.ok) {
+                const userInfo = await response.json();
+                setUser(userInfo);
+                setLoggedIn(true);
+            } else {
+                throw new Error('Login failed');
+            }
+
+            //const userInfo = response.data; // Assuming user information is in response.data
+            // setUser(userInfo);
+            // setLoggedIn(true);
         } catch (err) {
             alert('Login Failed! Please try again later');
         }

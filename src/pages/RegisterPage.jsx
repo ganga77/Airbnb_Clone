@@ -13,19 +13,24 @@ export default function RegisterPage(){
     async function registerUser(ev){
         ev.preventDefault();
         try{
-            await axios.post('http://localhost:4000/register', {
-            name, 
-            email,
-            password
-        });
-        const response = await axios.post('http://localhost:4000/login', {
+        //     await axios.post('http://localhost:4000/register', {
+        //     name, 
+        //     email,
+        //     password
+        // });
+        await fetch('http://localhost:4000/register', {
+            method: 'POST',
+            body: JSON.stringify({name, email, password}),
+            headers: {'Content-Type': 'application/json'}
+        })
+        const response = await fetch('http://localhost:4000/login', {
                 email,
                 password
             }, { withCredentials: true });
 
             const userInfo = response.data;
             setUser(userInfo);
-            
+
         setIsRegistered(true);
         
         alert('Registration Successful. You can now login')
