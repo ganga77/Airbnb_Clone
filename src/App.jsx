@@ -8,6 +8,7 @@ import UserContextProvider from './store/UserContext'
 import Account from './pages/Account'
 import PlacesPage from './pages/PlacesPage'
 import axios from 'axios'
+import PlacePage from './pages/PlacePage'
 
 axios.defaults.withCredentials = true;
 function App() {
@@ -23,6 +24,7 @@ function App() {
        <Route path="/account" element={<Account />}/>
        <Route path="/account/:subpage?" element={<Account />}/>
        <Route path="/account/:subpage/:action" element={<Account />}/>
+       
       </Route>
       
     </Routes>

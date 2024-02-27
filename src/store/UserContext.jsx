@@ -16,21 +16,24 @@ export default function UserContextProvider({ children }) {
                 const response = await fetch('http://localhost:4000/profile', {
                     credentials: 'include',
                 });
-
-                if (response.ok) {
-                    const userInfo = await response.json();
-                    setUser(userInfo);
-                } else {
+        
+                if (!response.ok) {
+                    console.error('Error fetching user data. Server response:', response);
                     setUser(null); // Set user to null in case of errors
+                } else {
+                    const userInfo = await response.json();
+                    console.log('User Info:', userInfo);
+                    setUser(userInfo);
                 }
-
+        
                 setReady(true);
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Error in fetchUserData:', error);
                 setUser(null);
                 setReady(true);
             }
         };
+        
 
         fetchUserData();
     }, []);

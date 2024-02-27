@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Link, Navigate, useParams } from "react-router-dom"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 export default function PlacesPage(){
     
     const {action} = useParams();
@@ -14,23 +14,38 @@ export default function PlacesPage(){
     const [guests, setGuests] = useState(1);
     const [addedPhotos, setAddedPhotos] = useState([]);
     const [redirect, setRedirect] = useState('');
+    const [places, setPlaces] = useState([]);
 
-    // function uploadPhoto(ev){
-    //     const files = ev.target.files;
-    //     const data = new FormData();
-    //     for(let i=0; i<files.length; i++){
-    //         data.append('photos', files[i]);
-    //     }
-        
-    //     axios.post('/upload', data, {
-    //         headers: { 'Content-type': 'multipart/form-data' }
-    //     }).then(response =>{
-    //         const {data:filename} = response;
-    //         setAddedPhotos(prev =>{
-    //             return [...prev, filename]
-    //         })
-    //     })
-    // }
+    // fetching data of places from /get route
+    useEffect(() =>{
+        axios.get('http://localhost:4000/places').then(({data}) =>{
+            setPlaces(data);
+        })
+    }, [])
+
+    async function uploadPhoto(ev) {
+        const files = ev.target.files;
+        const data = new FormData();
+    
+        for (let i = 0; i < files.length; i++) {
+            data.append('photos', files[i]);
+        }
+    
+        try {
+            const response = await axios.post('http://localhost:4000/upload', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            const { data: filenames } = response;
+            setAddedPhotos((prev) => [...prev, ...filenames]);
+            console.log(addedPhotos);
+        } catch (error) {
+            console.error('Error uploading photos:', error);
+        }
+    }
+    
 
     function handleCbClick(ev){
         const {checked, name} = ev.target;
@@ -43,43 +58,76 @@ export default function PlacesPage(){
         }
     }
 
-    async function addnewPlace(ev){
+    async function addNewPlace(ev) {
         ev.preventDefault();
-        const response = await axios.post('http://localhost:4000/places', {
-            title, address, description,
-            perks, extraInfo, checkIn, checkOut, guests
-        });
-        const placeInfo = response.data;
-        console.log(placeInfo);
+    
+       // await uploadPhoto(ev);
+        const placeData = {
+            title,
+            address,
+            description,
+            perks,
+            addedPhotos,
+            extraInfo,
+            checkIn,
+            checkOut,
+            guests,
+        };
+    
+        try {
+            const response = await fetch('http://localhost:4000/places', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(placeData),
+                credentials: 'include',
+            });
+    
+            if (response.ok) {
+                const placeDoc = await response.json();
+                console.log('Place created successfully:', placeDoc);
+                
+            } else {
+                
+                console.error('Place creation failed:', response.statusText);
+            }
+        } catch (error) {
+            
+            console.error('Error adding new place:', error);
+        }
     }
+    
 
     
     return (
-        <div className="text-center">
+
+        <div>
+            <div className="text-center">
             <Link className="bg-primary text-white py-2 px-6 rounded-full" 
              to={'new'}>Add a new place</Link>
+             </div>
+            
+            
              {action === 'new' && (
                 <div>
-                    <form onSubmit={addnewPlace}>
+                    <form onSubmit={addNewPlace}>
                         <h2 className="text-xl mt-4">Title</h2>
                         <input type="text" value={title} onChange={ev => setTitle(ev.target.value)} placeholder="title, for example my lovely apartment" />
                         <h2 className="text-xl mt-4">Address</h2>
                         <input type="text" value={address} onChange={ev => setAddress(ev.target.value) } placeholder="address" />
 
                          
-                        {/* <h2 className="text-xl mt-4">Photos</h2>
-                        <div className="flex gap-2">
-                        <input type="text" placeholder="Add using a link.... jpg"></input>
-                        <button className="bg-gray-200 px-4 rounded-2xl">Add Photo</button>
-                        </div>
+                        <h2 className="text-xl mt-4">Photos</h2>
+                        
                         
                         <div className="mt-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                         
                         <label className="cursor-pointer border bg-transparent rounded-2xl p-8 text-2xl text-gray-600">Upload
-                            <input type="file" multiple className="hidden" onChange={uploadPhoto}/>
+                            <input type="file" multiple name="photos" className="hidden" onChange={uploadPhoto}/>
                         </label>
 
-                        </div> */}
+                        </div>
 
                         <h2 className="text-2xl mt-4">Description</h2>
                         <p className="text-gray-500 text-sm">Description of the place</p>
@@ -160,6 +208,22 @@ export default function PlacesPage(){
                     </form>
                 </div>
              )}
+             <div className="mt-4">
+                {places.length > 0 && places.map(place =>(
+                    <Link to={'/account/places/'+place._id} className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl">
+                        <div className="w-32 h-32 bg-gray-300 ">
+                            {place.photos.length > 0 && (
+                                <img src={place.photos[0]} alt=""/>
+                            )}
+                        </div>
+                        <div className="grow-0 shrink">
+                        <h2 className="text-xl">{place.title}</h2>
+                        <p className="text-sm mt-2">{place.description}</p>
+                        </div>
+                        </Link>
+                ))}
+             </div>
         </div>
+       
     )
 }

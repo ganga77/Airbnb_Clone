@@ -6,6 +6,7 @@ export default function Header(){
   const {user} = useContext(UserContext);
     return (
         <header className='flex justify-between'>
+         
           
           
         <Link to={'/'} className="flex items-center gap-1">
@@ -55,7 +56,7 @@ export default function Header(){
 
 </Link>}
 
-{user && (
+{!!user && (
   <div>{user.name}</div>
 )}
 

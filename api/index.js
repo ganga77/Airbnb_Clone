@@ -6,13 +6,14 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
-const multer = require('multer')
+
 
 const User = require('./models/User.js')
 const Place = require('./models/Place.js')
 
 const bcryptSalt = bcrypt.genSaltSync(10); // For Password
 const jwtSecret = 'dgashahdhjajksdsd'; // random value for cookie used in login
+const fs = require('fs')
 //Connection b/w frontend and backend
 app.use(express.json());
 app.use(cookieParser());
@@ -93,10 +94,22 @@ app.post('/logout', (req, res) => {
 });
 
 //uploading photos
+const multer = require('multer')
 const photosMiddleware = multer({dest:'uploads/'})
-app.post('/upload', photosMiddleware.array('photos', 100),  (req, res) =>{
+
+app.post('/upload', photosMiddleware.array('photos', 100),  async(req, res) =>{
+    const uploadedFiles = [];
+    for(let i=0; i<req.files.length; i++){
+        const {path,originalname} = req.files[i];
+        console.log('Original Name is :' + originalname)
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        const newPath = path + '.' + ext;
+        fs.renameSync(path, newPath)
+       uploadedFiles.push(newPath.replace('uploads/',''))
+    }
     console.log(req.files);
-    res.json(req.files)
+   res.json(uploadedFiles)
 })
 
 
@@ -104,28 +117,52 @@ app.post('/upload', photosMiddleware.array('photos', 100),  (req, res) =>{
 
 
 // Form submission data from PlacesPage
+
 app.post('/places', async (req, res) => {
     const { token } = req.cookies;
 
     try {
-        const { title, address, description, perks, extraInfo, checkIn, checkOut, guests } = req.body;
-
+        const { title, address, description, addedPhotos, perks, extraInfo, checkIn, checkOut, guests } = req.body;
         
+        jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+            if (err) throw err;
 
-                const placeDoc = await Place.create({
-                    
-                    title, address, description, perks, extraInfo, checkIn, checkOut, guests
-                });
+            const placeDoc = await Place.create({
+                owner: userData.id,
+                title,
+                address,
+                description,
+                photos: addedPhotos,
+                perks,
+                extraInfo,
+                checkIn,
+                checkOut,
+                guests,
+            });
 
-                res.json(placeDoc);
-            
-        } 
-     catch (err) {
+            res.json(placeDoc); 
+        });
+    } catch (err) {
         res.status(422).json(err);
     }
 });
 
-// ...
+
+//fetching places data for the loggedin User
+app.get('/places', async (req, res) =>{
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        const {id} = userData;
+        res.json(await Place.find({owner:id}))
+    }) 
+})
+
+//fetching places data with only id
+app.get('/places/:id', async (req,res) =>{
+    const {id} = req.params;
+    res.json(await Place.findById(id));
+})
+
 
 
 app.listen(4000, () => {
@@ -135,19 +172,7 @@ app.listen(4000, () => {
 
 
 
-// profile page where there is no user
 
-// app.get('/profile', (req, res) =>{
-//     const {token} = req.cookies;
-//     if(token){
-//         jwt.verify(token, jwtSecret, {}, (err, user) =>{
-//             if(err) throw err;
-//             res.json(user);
-//         })
-//     }else {
-//         res.json(null);
-//     }
-// })
 
 
 
