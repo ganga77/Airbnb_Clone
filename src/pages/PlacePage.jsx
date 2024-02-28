@@ -35,6 +35,28 @@ export default function PlacePage(){
         
     }, [id])
     return (
-        <h1>Hello - {title} - {description}</h1>
-    )
+        <div className="container mx-auto mt-8">
+            <h1 className="text-3xl font-bold mb-4">{title}</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div>
+                    <img
+                        className="w-full h-64 object-cover mb-4"
+                        src={`http://localhost:4000/uploads/${addedPhotos[0]}`}
+                        alt="Place"
+                    />
+                </div>
+                <div>
+                    <p className="text-gray-600 mb-2">{description}</p>
+                    <p className="text-gray-700 mb-2">{address}</p>
+                    <p className="text-gray-700 mb-2">Perks: {perks.join(", ")}</p>
+                    <p className="text-gray-700 mb-2">Extra Info: {extraInfo}</p>
+                </div>
+                <div>
+                    <p className="text-gray-700 mb-2">Check-in: {checkIn}</p>
+                    <p className="text-gray-700 mb-2">Check-out: {checkOut}</p>
+                    <p className="text-gray-700 mb-2">Guests: {guests}</p>
+                </div>
+            </div>
+        </div>
+    );
 }

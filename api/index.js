@@ -17,7 +17,7 @@ const fs = require('fs')
 //Connection b/w frontend and backend
 app.use(express.json());
 app.use(cookieParser());
-app.use('upload', express.static(__dirname+'/uploads'))
+app.use('/uploads', express.static(__dirname+'/uploads'))
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173', 
