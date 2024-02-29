@@ -163,6 +163,34 @@ app.get('/places/:id', async (req,res) =>{
     res.json(await Place.findById(id));
 })
 
+//deleting a particular image of a particular post
+
+app.post('/places/:id/deletePhoto', async (req, res) => {
+    const { id } = req.params;
+    const { file } = req.body;
+
+    try {
+        // Assuming 'photos' is an array field in your Place model
+        const updatedPlace = await Place.findByIdAndUpdate(
+            id,
+            { $pull: { photos: file } },
+            { new: true }
+        );
+
+        res.json(updatedPlace);
+    } catch (error) {
+        console.error('Error deleting photo:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// deleting a particular place
+app.post('/places/:id/deletePlace', async(req, res) =>{
+    const {id} = req.params;
+    
+    const deletedPlace = await Place.findByIdAndDelete(id);
+    console.log('Deleted Place is:', deletedPlace)
+})
 
 
 app.listen(4000, () => {
