@@ -16,6 +16,7 @@ export default function PlacesFormPage(){
     const [guests, setGuests] = useState(1);
     const [addedPhotos, setAddedPhotos] = useState([]);
     const [redirect, setRedirect] = useState(false);
+    const [price, setPrice] = useState(100);
 
     async function addNewPlace(ev) {
         ev.preventDefault();
@@ -30,6 +31,7 @@ export default function PlacesFormPage(){
             checkIn,
             checkOut,
             guests,
+            price
         };
     
         try {
@@ -85,7 +87,7 @@ export default function PlacesFormPage(){
 
                         <h2 className="text-2xl mt-4">Checkin & Checkout timing</h2>
                         <p className="text-gray-500 text-sm">add check in and out times, remember to give some time for other guests</p>
-                        <div className="grid gap-2 sm:grid-cols-3 items-center">
+                        <div className="grid gap-2 grid-cols-2 md:grid-cols-4 ">
                             <div className="mt-2 -mb-1">
                                 <h3>Checkin Time</h3>
                             <input type="text" value={checkIn} onChange={ev => setCheckIn(ev.target.value)} placeholder="14:00"/>
@@ -96,10 +98,16 @@ export default function PlacesFormPage(){
                             <input type="text" value={checkOut} onChange={ev => setCheckOut(ev.target.value)} placeholder="19:00"/>
                             </div>
 
-                            <div className="mt-2 -mb-1">
-                            <h3>Max Guests</h3>
-                            <input type="number" value={guests} onChange={ev => setGuests(ev.target.value)} placeholder="3"/>
+                            <div >
+                            <h3 className="mt-2 -mb-1">Max Guests</h3>
+                            <input type="number" value={guests} onChange={ev => setGuests(ev.target.value)} />
                             </div>
+
+                            <div >
+                            <h3 className="mt-2 -mb-1">Price per night</h3>
+                            <input type="number" value={price} onChange={ev => setPrice(ev.target.value)} />
+                            </div>
+
                             </div>
 
 

@@ -122,7 +122,7 @@ app.post('/places', async (req, res) => {
     const { token } = req.cookies;
 
     try {
-        const { title, address, description, addedPhotos, perks, extraInfo, checkIn, checkOut, guests } = req.body;
+        const { title, address, description, addedPhotos, perks, extraInfo, checkIn, checkOut, guests, price } = req.body;
         
         jwt.verify(token, jwtSecret, {}, async (err, userData) => {
             if (err) throw err;
@@ -138,6 +138,7 @@ app.post('/places', async (req, res) => {
                 checkIn,
                 checkOut,
                 guests,
+                price
             });
 
             res.json(placeDoc); 
@@ -190,6 +191,11 @@ app.post('/places/:id/deletePlace', async(req, res) =>{
     
     const deletedPlace = await Place.findByIdAndDelete(id);
     console.log('Deleted Place is:', deletedPlace)
+})
+
+// Displaying places in index page
+app.get('/indexPlaces', async (req, res)=>{
+    res.json(await Place.find());
 })
 
 

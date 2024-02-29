@@ -39,7 +39,8 @@ export default function PlacesPage() {
             <div className="mt-4">
                 {places.length > 0 &&
                     places.map((place) => (
-                        <div key={place._id} className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl relative">
+                        <div className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl relative">
+                        <Link to={'/account/places/'+place._id} key={place._id} >
                             <div className="flex w-32 h-32 bg-gray-300">
                                 {place.photos.length > 0 && (
                                     <img className="object-cover w-full h-full" src={`http://localhost:4000/uploads/${place.photos[0]}`} alt="" />
@@ -48,6 +49,8 @@ export default function PlacesPage() {
                             <div className="grow-0 shrink">
                                 <h2 className="text-xl">{place.title}</h2>
                                 <p className="text-sm mt-2">{place.description}</p>
+                                </div>
+                                </Link>
                                 <button
                                     onClick={() => removePlace(place._id)}
                                     className="absolute bottom-4 right-4 cursor-pointer text-white bg-black bg-opacity-50 rounded-2xl"
@@ -67,7 +70,8 @@ export default function PlacesPage() {
                                         />
                                     </svg>
                                 </button>
-                            </div>
+                            
+                        
                         </div>
                     ))}
             </div>
