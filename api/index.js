@@ -10,6 +10,7 @@ require('dotenv').config()
 
 const User = require('./models/User.js')
 const Place = require('./models/Place.js')
+const Booking = require('./models/Booking.js')
 
 const bcryptSalt = bcrypt.genSaltSync(10); // For Password
 const jwtSecret = 'dgashahdhjajksdsd'; // random value for cookie used in login
@@ -198,6 +199,23 @@ app.get('/indexPlaces', async (req, res)=>{
     res.json(await Place.find());
 })
 
+// Creating booking api
+app.post('/booking', async (req, res) =>{
+    const {place, checkIn, checkOut,
+        numOfGuests, name, mobile, price
+    } = req.body;
+
+    try{
+    const bookingData = await Booking.create({
+        place, checkIn, checkOut,
+        numOfGuests, name, mobile, price
+    });
+
+    res.json(bookingData);
+    }catch (err) {
+        res.status(422).json(err);
+    }
+})
 
 app.listen(4000, () => {
     console.log('Server is running on port 4000');

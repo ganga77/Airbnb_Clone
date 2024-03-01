@@ -16,7 +16,8 @@ export default function PlacePage() {
     const [addedPhotos, setAddedPhotos] = useState([]);
     const [changePage, setChangePage] = useState(false);
     const [showAllPhotos, setShowAllPhotos] = useState(false)
-    const [price, setPrice] = useState(0)
+    const [price, setPrice] = useState(0);
+    const [place, setPlace] = useState(null)
 
     let { id } = useParams();
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function PlacePage() {
         }
         axios.get('http://localhost:4000/places/' + id).then(response => {
             const { data } = response;
+            console.log(data)
             setTitle(data.title);
             setAddress(data.address);
             setAddedPhotos(data.photos);
@@ -35,7 +37,8 @@ export default function PlacePage() {
             setCheckIn(data.checkIn);
             setCheckOut(data.checkOut);
             setGuests(data.guests);
-            setPrice(data.price)
+            setPrice(data.price);
+            setPlace(data)
         })
 
     }, [id]);
@@ -59,52 +62,6 @@ export default function PlacePage() {
         }
     }, [changePage, navigate])
 
-
-    //     return (
-    //         <div className="container mx-auto mt-8">
-    //             <h1 className="text-3xl font-bold mb-4">{title}</h1>
-    //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    //             <div>
-    //     {addedPhotos.map((photo, index) => (
-    //         <div key={index} className="relative">
-    //             <img
-    //                 className="w-full h-64 object-cover mb-4 rounded-lg"
-    //                 src={`http://localhost:4000/uploads/${photo}`}
-    //                 alt="Place"
-    //             />
-    //             <button onClick={() =>removePhoto(photo)} className="absolute bottom-4 right-4 cursor-pointer text-white bg-black bg-opacity-50 rounded-2xl">
-
-    //                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-    //   <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-    // </svg>
-
-    //             </button>
-    //         </div>
-    //     ))}
-    // </div>
-
-
-
-
-
-    //                 <div className="space-y-4">
-    //                     <p className="text-gray-600">{description}</p>
-    //                     <p className="text-gray-700">Address: {address}</p>
-    //                     <p className="text-gray-700">Perks: {perks.join(", ")}</p>
-    //                     <p className="text-gray-700">Extra Info: {extraInfo}</p>
-    //                 </div>
-    //                 <div className="space-y-4">
-    //                     <p className="text-gray-700">Check-in: {checkIn}</p>
-    //                     <p className="text-gray-700">Check-out: {checkOut}</p>
-    //                     <p className="text-gray-700">Guests: {guests}</p>
-    //                     <Link to={'/account/places'} className="text-blue-500 hover:underline">
-    //                         Back to Your Listings
-    //                     </Link>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     if (showAllPhotos) {
         return (
@@ -170,7 +127,7 @@ export default function PlacePage() {
                     Max Guests allowed: {guests}
                     
                 </div>
-                <BookingWidget price={price}/>
+                <BookingWidget place={place}/>
             </div>
             <div className="bg-white -mx-8 px-8 py-8 border-t">
             <h2 className="font-semibold text-2xl">Extra Info</h2>
