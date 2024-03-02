@@ -11,6 +11,8 @@ import PlacePage from './pages/PlacePage'
 import ProfilePage from './pages/ProfilePage'
 import PlacesFormPage from './pages/PlacesFormPage'
 import BookingPage from './pages/BookingPage'
+import BookingsPage from './pages/BookingsPage'
+
 axios.defaults.withCredentials = true;
 function App() {
   
@@ -27,6 +29,7 @@ function App() {
        <Route path="/account/places" element={<PlacesPage />}/>
        <Route path="/account/places/new" element={<PlacesFormPage />}/>
        <Route path="/account/places/:id" element={<PlacePage />}/>
+       <Route path="/account/bookings/" element={<BookingsPage />}/>
        <Route path="/account/bookings/:id" element={<BookingPage />}/>
       </Route>
       

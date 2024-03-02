@@ -27,6 +27,16 @@ app.use(cors({
 
 mongoose.connect(process.env.MONGO_URL) // npm i dotenv
 
+function getUserDataFromToken(req){
+    return new Promise((resolve, reject) =>{
+        jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) =>{
+            if(err) throw err;
+            resolve(userData)
+        })
+    })
+}
+
+
 //register route
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -129,7 +139,7 @@ app.post('/places', async (req, res) => {
             if (err) throw err;
 
             const placeDoc = await Place.create({
-                owner: userData.id,
+                owner: userData.id, // We are not doing userData._id because we have assigned id:userData._id
                 title,
                 address,
                 description,
@@ -199,14 +209,17 @@ app.get('/indexPlaces', async (req, res)=>{
     res.json(await Place.find());
 })
 
+
 // Creating booking api
 app.post('/booking', async (req, res) =>{
+    const userData = await getUserDataFromToken(req);
     const {place, checkIn, checkOut,
         numOfGuests, name, mobile, price
     } = req.body;
 
     try{
     const bookingData = await Booking.create({
+        user: userData.id,
         place, checkIn, checkOut,
         numOfGuests, name, mobile, price
     });
@@ -215,6 +228,13 @@ app.post('/booking', async (req, res) =>{
     }catch (err) {
         res.status(422).json(err);
     }
+})
+
+// To fetch bookings
+app.get('/bookings', async(req, res) =>{
+    const userData = await getUserDataFromToken(req);
+
+    res.json(await Booking.find({user:userData.id}).populate('place'));
 })
 
 app.listen(4000, () => {
